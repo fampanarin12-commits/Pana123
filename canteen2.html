@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Console - ร้านค้าพรีเมียม</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #800000;
+            --primary-light: #a52a2a;
+            --accent: #d4af37;
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --info: #3498db;
+            --danger: #e74c3c;
+            --bg-overlay: rgba(240, 242, 245, 0.85);
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f0f2f5;
+            background-image: url('https://www.transparenttextures.com/patterns/food.png'); 
+            margin: 0;
+            padding: 40px 20px;
+            color: #2d3436;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--bg-overlay);
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.5);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .header-title {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header-title h2 {
+            color: var(--primary);
+            font-size: 32px;
+            margin: 10px 0;
+        }
+
+        .flex-nav {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            background: rgba(0,0,0,0.05);
+            padding: 8px;
+            border-radius: 20px;
+        }
+
+        .btn-nav {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.3s;
+            background: transparent;
+            color: #636e72;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-nav.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+            border-left: 6px solid #dfe6e9;
+            transition: 0.3s;
+        }
+
+        .status-waiting { border-left-color: var(--warning); }
+        .status-ready { border-left-color: var(--info); }
+        .status-completed { border-left-color: var(--success); }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .customer-name { font-size: 20px; font-weight: 700; color: #2d3436; }
+        .order-time { font-size: 13px; color: #95a5a6; }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .badge-pending { background: #fff9e6; color: #d4a017; }
+        .badge-ready { background: #eef7fd; color: #2980b9; }
+        .badge-done { background: #eafaf1; color: #27ae60; }
+
+        .items-list {
+            background: #f8f9fa;
+            border-radius: 18px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-row:last-child { border-bottom: none; }
+
+        .qty-tag {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .total-price {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-status {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 13px;
+        }
+
+        .btn-pending { background: #f1f2f6; color: #57606f; }
+        .btn-ready { background: var(--info); color: white; }
+        .btn-done { background: var(--primary); color: white; grid-column: span 2; }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #b2bec3;
+            font-size: 12px;
+            margin-top: 15px;
+            cursor: pointer;
+            width: 100%;
+            text-decoration: underline;
+        }
+
+        .empty-state { text-align: center; padding: 60px; color: #b2bec3; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-title">
+            <p style="margin:0; opacity: 0.7;">✨ ยินดีต้อนรับร้านค้าพรีเมียม</p>
+            <h2><i class="fas fa-store-alt"></i> <span id="shopDisplayName">กำลังโหลด...</span></h2>
+        </div>
+        
+        <div class="flex-nav">
+            <button class="btn-nav" onclick="location.href='canteen1.html'"><i class="fas fa-utensils"></i> จัดการเมนู</button>
+            <button class="btn-nav active"><i class="fas fa-shopping-bag"></i> ออเดอร์</button>
+            <button class="btn-nav" onclick="logout()"><i class="fas fa-door-open"></i> ออกจากระบบ</button>
+        </div>
+
+        <div id="orderList"></div>
+    </div>
+
+    <script>
+        const currentShop = sessionStorage.getItem('currentUser') || "ร้านค้าพรีเมียม";
+        document.getElementById('shopDisplayName').innerText = currentShop;
+
+        // แก้ไข: เปลี่ยนจาก login.html เป็น index.html
+        function logout() {
+            if(confirm('ต้องการออกจากระบบ?')) {
+                sessionStorage.clear();
+                location.href = 'index.html';
+            }
+        }
+
+        function loadOrders() {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const list = document.getElementById('orderList');
+            list.innerHTML = '';
+
+            const myOrders = orders.filter(o => o.shop === currentShop);
+
+            if(myOrders.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-coffee" style="font-size: 40px; margin-bottom: 15px;"></i>
+                        <h3>ยังไม่มีออเดอร์ในขณะนี้</h3>
+                    </div>`;
+                return;
+            }
+
+            myOrders.reverse().forEach(order => {
+                let cardClass = 'status-waiting';
+                let badgeClass = 'badge-pending';
+                
+                if (order.status === 'รอรับสินค้า') {
+                    cardClass = 'status-ready';
+                    badgeClass = 'badge-ready';
+                } else if (order.status === 'รับสินค้าแล้ว') {
+                    cardClass = 'status-completed';
+                    badgeClass = 'badge-done';
+                }
+
+                const itemsHtml = order.items.map(item => `
+                    <div class="item-row">
+                        <span>${item.name}</span>
+                        <span class="qty-tag">x${item.quantity || 1}</span>
+                    </div>
+                `).join('');
+
+                list.innerHTML += `
+                    <div class="order-card ${cardClass}">
+                        <div class="order-header">
+                            <div>
+                                <div class="customer-name">${order.customer}</div>
+                                <div class="order-time"><i class="far fa-clock"></i> ${order.time}</div>
+                            </div>
+                            <span class="status-badge ${badgeClass}">${order.status}</span>
+                        </div>
+                        
+                        <div class="items-list">${itemsHtml}</div>
+                        <div class="total-price"><small style="font-size:12px; color:#999; font-weight:normal;">ยอดสุทธิ</small> ฿${order.total}</div>
+
+                        <div class="controls-grid">
+                            <button class="btn-status btn-pending" onclick="updateStatus('${order.id}', 'รอดำเนินการ')">⌛ รอคิว</button>
+                            <button class="btn-status btn-ready" onclick="updateStatus('${order.id}', 'รอรับสินค้า')">👨‍🍳 ทำเสร็จแล้ว</button>
+                            <button class="btn-status btn-done" onclick="updateStatus('${order.id}', 'รับสินค้าแล้ว')">✅ ปิดออเดอร์สำเร็จ</button>
+                        </div>
+
+                        <button class="btn-delete" onclick="deleteOrder('${order.id}')">ลบออเดอร์จากประวัติ</button>
+                    </div>`;
+            });
+        }
+
+        function updateStatus(orderId, newStatus) {
+            let orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders = orders.map(o => {
+                if(String(o.id) === String(orderId)) o.status = newStatus;
+                return o;
+            });
+            localStorage.setItem('orders', JSON.stringify(orders));
+            loadOrders();
+        }
+
+        function deleteOrder(orderId) {
+            if(confirm('ลบออเดอร์นี้หรือไม่?')) {
+                let orders = JSON.parse(localStorage.getItem('orders')) || [];
+                orders = orders.filter(o => String(o.id) !== String(orderId));
+                localStorage.setItem('orders', JSON.stringify(orders));
+                loadOrders();
+            }
+        }
+
+        loadOrders();
+        setInterval(loadOrders, 10000);
+    </script>
+</body>
+</html>

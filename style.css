@@ -1,0 +1,14 @@
+:root {
+    --primary-color: #800000; /* สีเลือดหมู เทคนิคพัทลุง */
+    --secondary-color: #f4f4f4;
+}
+body { font-family: 'Tahoma', sans-serif; background-color: var(--secondary-color); margin: 0; padding: 20px; }
+.container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+h1, h2 { color: var(--primary-color); text-align: center; }
+input, select, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+button { background-color: var(--primary-color); color: white; border: none; cursor: pointer; font-weight: bold; }
+button:hover { opacity: 0.9; }
+.card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+.flex { display: flex; justify-content: space-between; align-items: center; }
+.status-pending { color: orange; }
+.status-done { color: green; }

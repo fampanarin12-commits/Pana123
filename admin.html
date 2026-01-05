@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - จัดการระบบเทคนิคพัทลุง</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #800000;
+            --primary-light: #a31a1a;
+            --primary-dark: #5a0000;
+            --accent: #d4af37;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1600 800'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='1' stroke-opacity='0.1' d='M-100 400c200-100 400 100 600 0s400-200 600 0 400 200 600 0M-100 500c200-100 400 100 600 0s400-200 600 0 400 200 600 0M-100 300c200-100 400 100 600 0s400-200 600 0 400 200 600 0'/%3E%3C/svg%3E");
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        h2 { color: var(--primary); font-size: 32px; }
+
+        .add-box {
+            background: #fdfdfd;
+            padding: 30px;
+            border-radius: 25px;
+            margin-bottom: 35px;
+            border: 1px solid #eee;
+        }
+
+        /* --- ปรับปรุง Input Group ให้รองรับไฟล์ --- */
+        .input-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .file-input-wrapper {
+            grid-column: span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label.file-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        input[type="file"] {
+            background: #f8f9fa;
+            cursor: pointer;
+        }
+
+        input, select {
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 16px;
+            font-size: 16px;
+        }
+
+        button.btn-add {
+            grid-column: span 2;
+            background: linear-gradient(to bottom, var(--primary-light) 0%, var(--primary) 100%);
+            color: white; border: none; padding: 16px; border-radius: 16px;
+            font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 var(--primary-dark);
+            transition: 0.1s;
+        }
+
+        button.btn-add:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--primary-dark); }
+
+        /* --- แสดงผลรูปภาพในรายการ --- */
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .shop-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #eee;
+            border: 1px solid #ddd;
+        }
+
+        .user-icon {
+            width: 60px;
+            height: 60px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .info-text { flex: 1; }
+
+        .btn-del {
+            background: #fff; color: #ff4d4d; border: 1px solid #ffeded;
+            padding: 8px 15px; border-radius: 10px; cursor: pointer;
+            font-weight: bold; box-shadow: 0 4px 0 #ffe0e0;
+        }
+
+        .data-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .data-card { background: white; border-radius: 25px; padding: 25px; border: 1px solid #f5f5f5; }
+        
+        .btn-back {
+            margin-top: 30px; display: inline-block; padding: 15px 30px;
+            background: #333; color: white; border-radius: 15px; text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h2>⚙️ ระบบจัดการ Admin</h2>
+            <p>วิทยาลัยเทคนิคพัทลุง</p>
+        </header>
+
+        <div class="add-box">
+            <b style="color:var(--primary); font-size:18px;">➕ เพิ่มสมาชิกใหม่</b>
+            <div class="input-group">
+                <input type="text" id="newName" placeholder="ระบุชื่อที่นี่...">
+                <select id="newRole" onchange="toggleFile(this.value)">
+                    <option value="shop">🏢 ร้านค้า</option>
+                    <option value="customer">🎓 ลูกค้า</option>
+                </select>
+                
+                <div class="file-input-wrapper" id="fileWrapper">
+                    <label class="file-label">📸 รูปภาพหน้าร้าน:</label>
+                    <input type="file" id="shopImage" accept="image/*">
+                </div>
+
+                <button class="btn-add" onclick="addData()">💾 บันทึกข้อมูลสมาชิก</button>
+            </div>
+        </div>
+
+        <div class="data-section">
+            <div class="data-card">
+                <h3>🏢 รายชื่อร้านค้า</h3>
+                <div id="shopList"></div>
+            </div>
+
+            <div class="data-card">
+                <h3>🎓 รายชื่อลูกค้า</h3>
+                <div id="userList"></div>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn-back">◀ ย้อนกลับหน้าหลัก</a>
+    </div>
+
+    <script>
+        // ฟังก์ชันสลับการโชว์ที่ใส่รูป
+        function toggleFile(role) {
+            const wrapper = document.getElementById('fileWrapper');
+            wrapper.style.display = (role === 'shop') ? 'flex' : 'none';
+        }
+
+        function addData() {
+            const name = document.getElementById('newName').value.trim();
+            const role = document.getElementById('newRole').value;
+            const fileInput = document.getElementById('shopImage');
+            
+            if(!name) return alert('กรุณาระบุชื่อด้วยครับ');
+
+            if(role === 'shop') {
+                // กรณีเป็นร้านค้า - ต้องอ่านไฟล์ภาพก่อน
+                const file = fileInput.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onloadend = function() {
+                        saveToStorage('shops', { 
+                            id: Date.now(), 
+                            name: name, 
+                            img: reader.result // เก็บเป็น Base64
+                        });
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    // ถ้าร้านค้าไม่ได้เลือกรูป ให้ใส่รูป Default หรือแจ้งเตือน
+                    saveToStorage('shops', { id: Date.now(), name: name, img: null });
+                }
+            } else {
+                // กรณีเป็นลูกค้า
+                saveToStorage('users', { id: Date.now(), name: name });
+            }
+        }
+
+        function saveToStorage(key, data) {
+            let list = JSON.parse(localStorage.getItem(key)) || [];
+            list.push(data);
+            localStorage.setItem(key, JSON.stringify(list));
+            
+            // ล้างข้อมูลหน้าจอ
+            document.getElementById('newName').value = '';
+            document.getElementById('shopImage').value = '';
+            showData();
+        }
+
+        function showData() {
+            const shops = JSON.parse(localStorage.getItem('shops')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // แสดงรายการร้านค้า (มีรูป)
+            document.getElementById('shopList').innerHTML = shops.length ? shops.map(s => `
+                <div class="list-item">
+                    <img src="${s.img || 'https://via.placeholder.com/60'}" class="shop-thumb">
+                    <div class="info-text">
+                        <span style="font-weight:700; color:#333;">${s.name}</span>
+                    </div>
+                    <button class="btn-del" onclick="deleteItem(${s.id}, 'shop')">ลบ</button>
+                </div>
+            `).join('') : '<p style="color:#ccc; text-align:center;">ไม่มีข้อมูลร้านค้า</p>';
+
+            // แสดงรายการลูกค้า (มีไอคอน)
+            document.getElementById('userList').innerHTML = users.length ? users.map(u => `
+                <div class="list-item">
+                    <div class="user-icon">👤</div>
+                    <div class="info-text">
+                        <span style="font-weight:700;">${u.name}</span>
+                    </div>
+                    <button class="btn-del" onclick="deleteItem(${u.id}, 'customer')">ลบ</button>
+                </div>
+            `).join('') : '<p style="color:#ccc; text-align:center;">ไม่มีข้อมูลลูกค้า</p>';
+        }
+
+        function deleteItem(id, role) {
+            if(!confirm('ยืนยันการลบ?')) return;
+            const key = (role === 'shop') ? 'shops' : 'users';
+            let list = JSON.parse(localStorage.getItem(key)) || [];
+            localStorage.setItem(key, JSON.stringify(list.filter(i => i.id !== id)));
+            showData();
+        }
+
+        showData();
+    </script>
+</body>
+</html>
